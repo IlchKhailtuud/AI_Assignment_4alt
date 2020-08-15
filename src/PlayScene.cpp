@@ -554,7 +554,7 @@ void PlayScene::start()
 	/*m_enemyVec[0]->setStartNode(getPathNode(10, 3));
 	m_enemyVec[0]->setEndNode(getPathNode(10, 7));*/
 
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[0]);
+	/*m_enemyVec[0]->addPathNode(m_pathNodeVec[0]);
 	m_enemyVec[0]->addPathNode(m_pathNodeVec[1]);
 	m_enemyVec[0]->addPathNode(m_pathNodeVec[2]);
 	m_enemyVec[0]->addPathNode(m_pathNodeVec[3]);
@@ -597,14 +597,18 @@ void PlayScene::start()
 	m_enemyVec[0]->addPathNode(m_pathNodeVec[61]);
 	m_enemyVec[0]->addPathNode(m_pathNodeVec[60]);
 	m_enemyVec[0]->addPathNode(m_pathNodeVec[40]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[20]);
-	
+	m_enemyVec[0]->addPathNode(m_pathNodeVec[20]);*/
+
+	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[0]);
+	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[19]);
+	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[79]);
+	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[60]);
 	//m_enemyVec[0]->setPath();
 
 	for(auto enemy:m_enemyVec)
 	{
 		//enemy->getTransform()->position =  enemy->getPatrolPath()[0]->getTransform()->position;
-		enemy->get
+		enemy->getTransform()->position = enemy->getKeyNode()[0]->m_keyNode->getTransform()->position;
 		enemy->getRigidBody()->maxSpeed = 5.0f;
 	}
 	

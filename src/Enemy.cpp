@@ -115,10 +115,21 @@ void Enemy::AddKeyNode(PathNode* keyNode)
 		m_pKeyNodeVec.push_back(tempKeyNode);
 		tempKeyNode = nullptr;
 	}
+	std::cout << m_pKeyNodeVec.size() << std::endl;
 }
 
 void Enemy::PatrolMove()
 {
+	if(m_path.empty())
+	{
+		m_curTargetKeyNode = m_pKeyNodeVec[1];
+		PathManager::GetShortestPath(m_curTargetKeyNode->m_keyNode, m_curTargetKeyNode->m_nextNode->m_keyNode);
+		m_path = PathManager::getPath();
+		m_curTargetKeyNode = m_curTargetKeyNode->m_nextNode;
+		m_currentNode = m_curTargetKeyNode->m_keyNode;
+		m_targetNode = m_path.front()->GetToNode();
+		m_nodeIndex = 0;
+	}
 	if((int)m_pKeyNodeVec.size()<2)
 	{
 		std::cout << "Key Node is smaller than 2" << std::endl;
@@ -127,7 +138,7 @@ void Enemy::PatrolMove()
 	auto targetVector = Util::normalize(m_targetNode->getTransform()->position - this->getTransform()->position);
 	std::cout << "x: " << targetVector.x << " y:" << targetVector.y << std::endl;
 
-	/*float buffer = 0.01;
+	float buffer = 0.01;
 	if (targetVector.x >= 1 - buffer && targetVector.x <= 1 + buffer)
 	{
 		this->setAngle(90.0f);
@@ -143,7 +154,7 @@ void Enemy::PatrolMove()
 	else if (targetVector.y >= -1 - buffer && targetVector.y <= -1 + buffer)
 	{
 		this->setAngle(0.0f);
-	}*/
+	}
 
 	this->getRigidBody()->velocity = targetVector;
 	this->getTransform()->position += this->getRigidBody()->velocity * this->getRigidBody()->maxSpeed;

@@ -34,6 +34,7 @@ public:
 	void AddKeyNode(PathNode* keyNode);
 	void PatrolMove();
 	void SetNextNode();
+	std::vector<KeyNode*> getKeyNode() { return m_pKeyNodeVec; }
 protected:
 	
 public:
