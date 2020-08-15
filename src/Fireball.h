@@ -6,21 +6,25 @@ class FireBall :public Sprite
 public:
 	FireBall(float x, float y, int face);
 	~FireBall();
+	
 	void draw() override;
 	void update() override;
 	void clean() override;
-	bool getIsActive() { return m_active; }
+	
 	void setUnactive()
 	{
-		m_active = false;
+		m_bIsActive = false;
 	}
-
-	void m_buildAnimations();
+	
 	int getMaxhealth() override { return 0; }
 
+	bool bIsActive() { return m_bIsActive; }
+	void setActive();
+	
 private:
+	void m_buildAnimations();
 	int m_speed;
-	bool m_active = true;
+	bool m_bIsActive;
 	int m_damage;
 	int face;
 };

@@ -10,7 +10,7 @@ const int MAXENEMY = 1;
 #include "Plane.h"
 #include "Player.h"
 #include "Button.h"
-#include "Obstacle.h"
+#include "DestructibleObstacle.h"
 #include "PathNode.h"
 #include "Tile.h"
 #include <array>
@@ -60,10 +60,10 @@ private:
 
 	int m_pathNodeNum;
 
-	//Obstacle* m_pObstacle;
+	//DestructibleObstacle* m_pObstacle;
 	std::vector<PathNode*> m_pathNodeVec;
 	std::vector<Enemy*> m_enemyVec;
-	//std::vector<Obstacle*> m_obstacleVec;
+	//std::vector<DestructibleObstacle*> m_obstacleVec;
 	std::vector<glm::vec2> m_pointVec;
 	std::vector<glm::vec4> m_colorVec;
 	std::array<std::array<Tile*, Config::COL_NUM>, Config::ROW_NUM> m_level;

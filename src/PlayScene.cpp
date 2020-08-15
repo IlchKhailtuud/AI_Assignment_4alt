@@ -56,7 +56,7 @@ void PlayScene::update()
 	m_enemyKilled = MAXENEMY - m_enemyVec.size();
 	m_pEnemyKilledLabel->setText(std::to_string(m_enemyKilled));
 	
-	//std::cout << "Obstacle Number: " << m_obstacleVec.size() << std::endl;
+	//std::cout << "DestructibleObstacle Number: " << m_obstacleVec.size() << std::endl;
 	for (auto fireball : m_pFireballVec)
 	{
 		for (auto enemy : m_enemyVec)
@@ -394,7 +394,7 @@ void PlayScene::LoadMap()
 					{
 					m_level[row][col] = new Brick(40.0f * col , 40.0f * row ); 
 					m_obstacleVec.push_back(m_level[row][col]);
-					//std::cout << "Obstacle Size: " << m_obstacleVec.size() << std::endl;
+					//std::cout << "DestructibleObstacle Size: " << m_obstacleVec.size() << std::endl;
 					//std::cout << "Brick: " << m_level[row][col]->getTransform()->position.x << " " << m_level[row][col]->getTransform()->position.y << std::endl;
 					break;
 					}
@@ -414,7 +414,7 @@ void PlayScene::LoadMap()
 				}
 			}
 		}
-		//std::cout << "Obstacle Size: " << m_obstacleVec.size() << std::endl;
+		//std::cout << "DestructibleObstacle Size: " << m_obstacleVec.size() << std::endl;
 	}
 }
 

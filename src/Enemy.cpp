@@ -21,6 +21,11 @@ Enemy::~Enemy()
 void Enemy::DecHP(int damage)
 {
 	m_curHealth = m_curHealth - damage;
+	if (m_curHealth < 0)
+	{
+		m_curHealth = 0;
+		reset();
+	}
 }
 
 int Enemy::getDetectionRadius()
@@ -178,4 +183,9 @@ void Enemy::SetNextNode()
 		std::cout << "the last one" << std::endl;
 		m_currentNode = m_targetNode;
 	}
+}
+
+void Enemy::setActive()
+{
+	m_bIsActive = true;
 }
