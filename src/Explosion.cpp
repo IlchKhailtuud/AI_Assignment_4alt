@@ -17,7 +17,7 @@ Explosion::Explosion():m_bIsActive(false)
 	setHeight(52);
 
 	getTransform()->position = glm::vec2(200.0f, 200.0f);
-	setType(EXPLOSION);
+	//setType(EXPLOSION);
 
 	m_buildAnimations();
 
@@ -36,8 +36,8 @@ void Explosion::draw()
 		const auto x = getTransform()->position.x;
 		const auto y = getTransform()->position.y;
 
-		TextureManager::Instance()->playAnimation(
-			"spritesheet", getAnimation("explosion"), x, y, 0.5f, 0, 255, true);
+		TextureManager::Instance()->playAnimation("spritesheet", getAnimation("explosion"), x, y, getWidth(), getHeight(), 0.5f, 0, 255, true);
+			
 	}
 	else
 	{		
