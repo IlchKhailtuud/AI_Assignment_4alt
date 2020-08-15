@@ -14,6 +14,8 @@ public:
 	virtual void draw() = 0;
 	virtual void update() = 0;
 	virtual void clean() = 0;
+  virtual void reset() = 0;
+	virtual void setActive() = 0;
 
 	//getter
 	int getDetectionRadius();
@@ -40,13 +42,15 @@ public:
 	void detectPlayer(Sprite* player);	
 	void AddKeyNode(PathNode* keyNode);
 	void PatrolMove();
+
 	void SetNextNode();	
 	void Move2LOS();
 	void MoveEnemy();
+  bool isActive() { return m_bIsActive; }
 protected:
 	
 public:
-	
+
 protected:
 	float 	m_accel,
 			m_vel,
@@ -55,7 +59,8 @@ protected:
 	int	m_detectionRadius;
 	bool m_isPatrol,
 		m_hasLOS,
-		m_DetectPlayer;
+		m_DetectPlayer,
+		m_bIsActive;
 	
 	PathNode* start_point, * end_point;
 	PathNode* m_targetNode,

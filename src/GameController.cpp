@@ -27,7 +27,7 @@ void GameController::update()
     LEFT_SHOULDER = SDL_GameControllerGetButton(handle, SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
     RIGHT_SHOULDER = SDL_GameControllerGetButton(handle, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
 
-    // face buttons
+    // m_face buttons
     A_BUTTON = SDL_GameControllerGetButton(handle, SDL_CONTROLLER_BUTTON_A);
     B_BUTTON = SDL_GameControllerGetButton(handle, SDL_CONTROLLER_BUTTON_B);
     X_BUTTON = SDL_GameControllerGetButton(handle, SDL_CONTROLLER_BUTTON_X);

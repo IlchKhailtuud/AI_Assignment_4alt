@@ -2,7 +2,7 @@
 
 #include "TextureManager.h"
 
-FireBall::FireBall(float x, float y, int face)
+FireBall::FireBall() :m_face(1),m_damage(50),m_speed(10)
 {
 	TextureManager::Instance()->loadSpriteSheet(
 		"../Assets/sprites/fireball.txt",
@@ -16,23 +16,21 @@ FireBall::FireBall(float x, float y, int face)
 	// set frame height
 	setHeight(16);
 
-	getTransform()->position = glm::vec2(x, y);
+	//getTransform()->position = glm::vec2(x, y);
 	getRigidBody()->velocity = glm::vec2(0.0f, 0.0f);
 	getRigidBody()->acceleration = glm::vec2(0.0f, 0.0f);
 	//getRigidBody()->maxSpeed = 10.0f;
 	getRigidBody()->isColliding = false;
 
-	m_speed = 10;
-	this->face = face;
 	//setType(FIREBALL);
 
 	m_buildAnimations();
+
+	reset();
 }
 
 FireBall::~FireBall()
-{
-
-}
+= default;
 
 void FireBall::draw()
 {
@@ -46,9 +44,32 @@ void FireBall::draw()
 
 void FireBall::update()
 {
-	this->getTransform()->position.x += m_speed * face;
+	this->getTransform()->position.x += m_speed * m_face;
+	if (this->getTransform()->position.x < 0 || this->getTransform()->position.x > 1024 
+		|| this->getTransform()->position.y < 0 || this->getTransform()->position.y > 768)
+		reset();
 }
 
+void FireBall::clean()
+{
+
+}
+
+void FireBall::reset()
+{
+	if (m_bIsActive == true)
+	{
+		getTransform()->position.x = -1000;
+		getTransform()->position.y = -1000;
+		m_bIsActive = false;
+	}
+}
+
+void FireBall::setActive()
+{
+	getAnimation("fireball").current_frame = 0;
+	m_bIsActive = true;
+}
 
 void FireBall::m_buildAnimations()
 {
@@ -65,8 +86,7 @@ void FireBall::m_buildAnimations()
 	setAnimation(fireAnimation);
 }
 
-
-void FireBall::clean()
+void FireBall::setFace(int face)
 {
-
+	m_face = face;
 }

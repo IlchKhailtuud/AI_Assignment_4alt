@@ -22,6 +22,11 @@ Enemy::~Enemy()
 void Enemy::DecHP(int damage)
 {
 	m_curHealth = m_curHealth - damage;
+	if (m_curHealth < 0)
+	{
+		m_curHealth = 0;
+		reset();
+	}
 }
 
 int Enemy::getDetectionRadius()
@@ -175,6 +180,7 @@ void Enemy::SetNextNode()
 	}
 }
 
+
 void Enemy::Move2LOS()
 {
 	if (!m_hasLOS)
@@ -262,4 +268,8 @@ void Enemy::MoveEnemy()
 void Enemy::setCurTargetKdyNode(KeyNode* target)
 {
 	m_curTargetKeyNode = target;
+
+void Enemy::setActive()
+{
+	m_bIsActive = true;
 }
