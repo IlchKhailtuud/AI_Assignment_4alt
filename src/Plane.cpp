@@ -102,7 +102,8 @@ void Plane::update()
 	if(m_isPatrol)
 	{
 		//MovePlanetoPatrolNode();
-		PatrolMove();
+		//PatrolMove();
+		Move2LOS();
 		SoundManager::Instance().playSound("engine", 0, -1);
 	}
 
