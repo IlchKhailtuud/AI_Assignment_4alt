@@ -1,6 +1,6 @@
-#include "Fireball.h"
+﻿#include "Fireball.h"
 
-#include "../src/TextureManager.h"
+#include "TextureManager.h"
 
 FireBall::FireBall(float x, float y, int face)
 {

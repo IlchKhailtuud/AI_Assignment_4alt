@@ -22,11 +22,9 @@ Plane::Plane(float x,float y)
 	setSpriteSheet(TextureManager::Instance()->getSpriteSheet("slime"));
 
 	// set frame width
-	//setWidth(40);
 	setWidth(32);
 	
 	// set frame height
-	//setHeight(40);
 	setHeight(32);
 
 	getTransform()->position = glm::vec2(x,y);
@@ -41,6 +39,9 @@ Plane::Plane(float x,float y)
 	m_detectionRadius = 200;
 	m_accel = 0.2;
 	m_velMax = 2.0;
+
+	m_outerState = FIGHT;
+	m_innerState = PATROL;
 
 	m_buildAnimations();
 }
@@ -93,9 +94,15 @@ void Plane::update()
 	////std::cout << m_dir << std::endl;
 	//MovePlane();
 	//
+
+	m_checkCurrentConditions();
+	
+
+	
 	if(m_isPatrol)
 	{
-		MovePlanetoPatrolNode();
+		//MovePlanetoPatrolNode();
+		PatrolMove();
 		SoundManager::Instance().playSound("engine", 0, -1);
 	}
 
@@ -186,22 +193,93 @@ void Plane::MovePlane()
 	//std::cout << "after " << m_dX<<" "<<m_dY << std::endl;
 }
 
-void Plane::SetNextNode()
+//void Plane::SetNextNode()
+//{
+//	//std::cout << "Set Node" << m_nodeIndex<<" "<<(int)s_path.size()<<std::endl;
+//	if (m_nodeIndex < (int)m_path.size() - 1)
+//	{
+//		//std::cout << "Before: Move from (" << m_currentNode->x/32 << "," << m_currentNode->y/32 << ") to (" << m_targetNode->x/32 << "," << m_targetNode->y/32 << ")." << std::endl;
+//		m_currentNode = m_targetNode;
+//		m_targetNode = m_path[++m_nodeIndex]->GetToNode();
+//		//std::cout << "After: Move from (" << m_currentNode->x/32 << "," << m_currentNode->y/32<< ") to (" << m_targetNode->x/32 << "," << m_targetNode->y/32 << ")." << std::endl;
+//	}
+//	else
+//	{
+//		std::cout << "the last one" << std::endl;
+//		m_currentNode = m_targetNode;
+//	}
+//}
+
+void Plane::m_checkCurrentConditions()
 {
-	//std::cout << "Set Node" << m_nodeIndex<<" "<<(int)s_path.size()<<std::endl;
-	if (m_nodeIndex < (int)m_path.size() - 1)
+	if (m_curHealth >= 25)
 	{
-		//std::cout << "Before: Move from (" << m_currentNode->x/32 << "," << m_currentNode->y/32 << ") to (" << m_targetNode->x/32 << "," << m_targetNode->y/32 << ")." << std::endl;
-		m_currentNode = m_targetNode;
-		m_targetNode = m_path[++m_nodeIndex]->GetToNode();
-		//std::cout << "After: Move from (" << m_currentNode->x/32 << "," << m_currentNode->y/32<< ") to (" << m_targetNode->x/32 << "," << m_targetNode->y/32 << ")." << std::endl;
+		if (m_DetectPlayer)
+		{
+			if (m_hasLOS)
+			{
+				// check the distance
+
+				if (m_withinMeleeRange)
+				{
+					m_innerState=MELEE_ATTACK;
+				}
+				else
+				{
+					m_innerState = MOVE_TO_MELEE;
+				}
+			}
+			else
+			{
+				m_innerState = MOVE_TO_LOS;
+			}
+		}
 	}
 	else
 	{
-		std::cout << "the last one" << std::endl;
-		m_currentNode = m_targetNode;
+		m_outerState=FLIGHT;
 	}
 }
+
+void Plane::m_stateMachineUpdate()
+{
+	switch (m_outerState)
+	{
+	case FIGHT:
+		switch (m_innerState)
+		{
+		case PATROL:
+			{
+				// Patrol Action
+					
+				break;
+			}	
+			
+		case MELEE_ATTACK:
+			{
+				// Perform Melee Attack Action
+				break;
+			}					
+		case MOVE_TO_LOS:
+			{
+				// Move 2 LOS Action
+				break;
+			}			
+		case MOVE_TO_MELEE:
+			{
+				// Move 2 Melee Range Action
+				break;
+			}			
+		}
+		break;
+	case FLIGHT:
+		{
+			// Flee Action
+			break;
+		}
+	}
+}
+
 
 /*void Plane::setPath(std::vector<PathConnection*> path)
 {
@@ -210,10 +288,6 @@ void Plane::SetNextNode()
 	m_targetNode = m_path[0]->GetToNode();
 }*/
 
-std::vector<PathConnection*> Plane::getPath()
-{
-	return m_path;
-}
 
 
 void Plane::getDir()

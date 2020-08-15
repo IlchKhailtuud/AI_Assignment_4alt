@@ -120,14 +120,17 @@
     <ClCompile Include="..\src\PathManager.cpp">
       <Filter>Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Fireball.cpp">
-      <Filter>Game Objects</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\HealthBarBorder.cpp">
       <Filter>UI Objects</Filter>
     </ClCompile>
     <ClCompile Include="..\src\HealthBarFiller.cpp">
       <Filter>UI Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\StateMachine.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Fireball.cpp">
+      <Filter>Game Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -260,9 +263,6 @@
     <ClInclude Include="..\src\PathManager.h">
       <Filter>Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Fireball.h">
-      <Filter>Game Objects</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\HealthBarBorder.h">
       <Filter>UI Objects</Filter>
     </ClInclude>
@@ -271,6 +271,15 @@
     </ClInclude>
     <ClInclude Include="ObstacleManager.h">
       <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\StateMachine.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\BehaviorState.h">
+      <Filter>Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Fireball.h">
+      <Filter>Game Objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

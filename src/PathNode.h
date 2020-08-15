@@ -54,3 +54,21 @@ struct NodeRecord
 	float m_costSoFar;
 	float m_totalCost;
 };
+
+struct KeyNode
+{
+	KeyNode(PathNode* n=nullptr,KeyNode* last=nullptr,KeyNode* next=nullptr):m_keyNode(n),m_lastNode(last),m_nextNode(next){}
+	PathNode* m_keyNode;
+	KeyNode *m_lastNode,
+		*m_nextNode;
+};
+
+//class KeyNodeList
+//{
+//private:
+//	KeyNode* head,
+//		* tail;
+//public:
+//	KeyNodeList();
+//	void AddKeyNode(KeyNode* newKeyNode);
+//};

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Sprite.h"
 #include"PathNode.h"
+#include "PathManager.h"
 
 const int ENEMYMAXHEALTH = 100;
 
@@ -29,6 +30,10 @@ public:
 	void detectPlayer(Sprite* player);
 	virtual int getMaxhealth() { return ENEMYMAXHEALTH; }
 	bool getDetect() { return m_DetectPlayer; }
+	std::vector<PathConnection*> getPath();
+	void AddKeyNode(PathNode* keyNode);
+	void PatrolMove();
+	void SetNextNode();
 protected:
 	
 public:
@@ -45,7 +50,11 @@ protected:
 		m_DetectPlayer;
 	
 	PathNode* start_point, * end_point;
-	PathNode* m_targetNode, * m_currentNode;
+	PathNode* m_targetNode,
+		* m_currentNode,
+		* m_nextNode;
+	KeyNode* m_curTargetKeyNode;
 	std::vector<PathConnection*> m_path;
 	std::vector<PathNode*> m_pPatrolPath;
+	std::vector<KeyNode*> m_pKeyNodeVec;
 };
