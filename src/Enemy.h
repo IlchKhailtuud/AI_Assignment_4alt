@@ -15,26 +15,34 @@ public:
 	virtual void update() = 0;
 	virtual void clean() = 0;
 
-	void DecHP(int damage);
+	//getter
 	int getDetectionRadius();
+	bool getPatrolMode() { return m_isPatrol; }
+	bool getHasLOS() { return m_hasLOS; };
+	virtual int getMaxhealth() { return ENEMYMAXHEALTH; }
+	std::vector<KeyNode*> getKeyNode() { return m_pKeyNodeVec; }
+	KeyNode* getCurTargetKeyNode() { return m_curTargetKeyNode; }
+	std::vector<PathNode*> getPatrolPath() { return m_pPatrolPath; }
+	bool getDetect() { return m_DetectPlayer; }
+	std::vector<PathConnection*> getPath();
+	
+	//setter
 	void setStartNode(PathNode* start) { start_point = start; }
 	void setEndNode(PathNode* end) { end_point = end; }
 	void setPath(std::vector<PathNode*> PatrolPath);
-	void MovePlanetoPatrolNode();
 	void setPatrolMode(bool isPatrol) { m_isPatrol = isPatrol; }
-	bool getPatrolMode() { return m_isPatrol; }
-	void addPathNode(PathNode* node);
-	std::vector<PathNode*> getPatrolPath() { return m_pPatrolPath; }
-	bool getHasLOS() { return m_hasLOS; };
 	void setHasLOS(bool hasLOS) { m_hasLOS = hasLOS; }
-	void detectPlayer(Sprite* player);
-	virtual int getMaxhealth() { return ENEMYMAXHEALTH; }
-	bool getDetect() { return m_DetectPlayer; }
-	std::vector<PathConnection*> getPath();
+	void setCurTargetKdyNode(KeyNode* target);
+	
+	void DecHP(int damage);	
+	void MovePlanetoPatrolNode();	
+	void addPathNode(PathNode* node);	
+	void detectPlayer(Sprite* player);	
 	void AddKeyNode(PathNode* keyNode);
 	void PatrolMove();
-	void SetNextNode();
-	std::vector<KeyNode*> getKeyNode() { return m_pKeyNodeVec; }
+	void SetNextNode();	
+	void Move2LOS();
+	void MoveEnemy();
 protected:
 	
 public:
@@ -43,8 +51,7 @@ protected:
 	float 	m_accel,
 			m_vel,
 			m_velMax;
-	int m_nodeIndex;
-	
+	int m_nodeIndex;	
 	int	m_detectionRadius;
 	bool m_isPatrol,
 		m_hasLOS,
@@ -54,6 +61,7 @@ protected:
 	PathNode* m_targetNode,
 		* m_currentNode,
 		* m_nextNode;
+	PathNode* m_pTargetPathNode;
 	KeyNode* m_curTargetKeyNode;
 	std::vector<PathConnection*> m_path;
 	std::vector<PathNode*> m_pPatrolPath;

@@ -3,6 +3,7 @@
 #include "PathManager.h"
 #include "Util.h"
 #include"CollisionManager.h"
+#include"PlayScene.h"
 
 Enemy::Enemy()
 {
@@ -104,60 +105,42 @@ void Enemy::AddKeyNode(PathNode* keyNode)
 	if(m_pKeyNodeVec.empty())
 	{
 		KeyNode* tempKeyNode = new KeyNode(keyNode);
+		//std::cout << tempKeyNode->m_keyNode->getTransform()->position.x << " " << tempKeyNode->m_keyNode->getTransform()->position.y << std::endl;
 		m_pKeyNodeVec.push_back(tempKeyNode);
 		tempKeyNode = nullptr;
 	}
 	else
 	{
 		KeyNode* tempKeyNode = new KeyNode(keyNode, m_pKeyNodeVec.back(), m_pKeyNodeVec.front());
+		//std::cout << tempKeyNode->m_keyNode->getTransform()->position.x << " " << tempKeyNode->m_keyNode->getTransform()->position.y << std::endl;
 		m_pKeyNodeVec.back()->m_nextNode = tempKeyNode;
 		m_pKeyNodeVec.front()->m_lastNode = tempKeyNode;
 		m_pKeyNodeVec.push_back(tempKeyNode);
 		tempKeyNode = nullptr;
 	}
-	std::cout << m_pKeyNodeVec.size() << std::endl;
+	//std::cout << m_pKeyNodeVec.size() << std::endl;
 }
 
 void Enemy::PatrolMove()
 {
+	if((int)m_pKeyNodeVec.size()<2)
+		{
+			std::cout << "Key Node is smaller than 2" << std::endl;
+			return;
+		}
 	if(m_path.empty())
 	{
-		m_curTargetKeyNode = m_pKeyNodeVec[1];
-		PathManager::GetShortestPath(m_curTargetKeyNode->m_keyNode, m_curTargetKeyNode->m_nextNode->m_keyNode);
+		//std::cout << m_curTargetKeyNode->m_keyNode->getTransform()->position.x << " " << m_curTargetKeyNode->m_keyNode->getTransform()->position.y << std::endl;
+		//std::cout << m_curTargetKeyNode->m_nextNode->m_keyNode->getTransform()->position.x << " " << m_curTargetKeyNode->m_nextNode->m_keyNode->getTransform()->position.y << std::endl;
+		PathManager::GetShortestPath(m_curTargetKeyNode->m_lastNode->m_keyNode, m_curTargetKeyNode->m_keyNode);
 		m_path = PathManager::getPath();
-		m_curTargetKeyNode = m_curTargetKeyNode->m_nextNode;
-		m_currentNode = m_curTargetKeyNode->m_keyNode;
-		m_targetNode = m_path.front()->GetToNode();
+		m_currentNode = m_curTargetKeyNode->m_lastNode->m_keyNode;
+		m_targetNode = m_path.back()->GetToNode();
 		m_nodeIndex = 0;
+		std::cout << "Target:" << m_targetNode->getTransform()->position.x << " " << m_targetNode->getTransform()->position.y << std::endl;
 	}
-	if((int)m_pKeyNodeVec.size()<2)
-	{
-		std::cout << "Key Node is smaller than 2" << std::endl;
-		return;
-	}
-	auto targetVector = Util::normalize(m_targetNode->getTransform()->position - this->getTransform()->position);
-	std::cout << "x: " << targetVector.x << " y:" << targetVector.y << std::endl;
-
-	float buffer = 0.01;
-	if (targetVector.x >= 1 - buffer && targetVector.x <= 1 + buffer)
-	{
-		this->setAngle(90.0f);
-	}
-	else if (targetVector.x >= -1 - buffer && targetVector.x <= -1 + buffer)
-	{
-		this->setAngle(-90.0f);
-	}
-	else if (targetVector.y >= 1 - buffer && targetVector.y <= 1 + buffer)
-	{
-		this->setAngle(180.0f);
-	}
-	else if (targetVector.y >= -1 - buffer && targetVector.y <= -1 + buffer)
-	{
-		this->setAngle(0.0f);
-	}
-
-	this->getRigidBody()->velocity = targetVector;
-	this->getTransform()->position += this->getRigidBody()->velocity * this->getRigidBody()->maxSpeed;
+	
+	MoveEnemy();
 	
 	if(abs(Util::distance(this->getTransform()->position, m_curTargetKeyNode->m_keyNode->getTransform()->position)) < 10.0f)
 	{
@@ -166,6 +149,7 @@ void Enemy::PatrolMove()
 		m_curTargetKeyNode = m_curTargetKeyNode->m_nextNode;
 		m_currentNode = m_curTargetKeyNode->m_keyNode;
 		m_targetNode = m_path.front()->GetToNode();
+		std::cout << "To: " << m_curTargetKeyNode->m_keyNode->getTransform()->position.x << " " << m_curTargetKeyNode->m_keyNode->getTransform()->position.y << std::endl;
 		m_nodeIndex = 0;
 	}
 	else if(abs(Util::distance(this->getTransform()->position, m_targetNode->getTransform()->position)) < 10.0f)
@@ -189,4 +173,93 @@ void Enemy::SetNextNode()
 		std::cout << "the last one" << std::endl;
 		m_currentNode = m_targetNode;
 	}
+}
+
+void Enemy::Move2LOS()
+{
+	if (!m_hasLOS)
+		return;
+	float NodeDis=0.0f;
+	float EnemyDis = 0.0f;
+	PathNode* TargetPathNode=nullptr;
+	for(auto pathnode:PlayScene::getNodeVec())
+	{
+		float tempDistance = Util::distance(this->getTransform()->position, pathnode->getTransform()->position);
+		if (NodeDis == 0.0f && pathnode->getLOS() == false)
+		{
+			NodeDis = Util::distance(this->getTransform()->position, pathnode->getTransform()->position);
+			TargetPathNode = pathnode;
+			std::cout << "set distance as first value" << std::endl;
+		}		
+		//std::cout << pathnode->getLOS() << " " << NodeDis << " " << tempDistance << std::endl;
+		if(pathnode->getLOS()==false && tempDistance<NodeDis)
+		{
+			NodeDis = tempDistance;
+			TargetPathNode = pathnode;
+			//std::cout << TargetPathNode << std::endl;
+			//std::cout << "this node: " << pathnode->getTransform()->position.x << " " << pathnode->getTransform()->position.y << std::endl;
+			//std::cout << "set target at " << TargetPathNode->getTransform()->position.x << " " << TargetPathNode->getTransform()->position.y << std::endl;
+		}
+		if(EnemyDis==0.0f)
+		{
+			EnemyDis = tempDistance;
+			m_currentNode = pathnode;
+		}
+		else if(tempDistance<EnemyDis)
+		{
+			EnemyDis = tempDistance;
+			m_currentNode = pathnode;
+		}
+	}
+	//std::cout << "distance:" << NodeDis << std::endl;
+	if (Util::distance(this->getTransform()->position, TargetPathNode->getTransform()->position) < 10.0f)
+	{
+		return;
+	}
+	if(m_pTargetPathNode!=TargetPathNode)
+	{
+		m_pTargetPathNode = TargetPathNode;
+		PathManager::GetShortestPath(m_currentNode, m_pTargetPathNode);
+		m_path = PathManager::getPath();
+		m_currentNode = m_path.front()->GetFromNode();
+		m_targetNode = m_path.front()->GetToNode();
+		m_nodeIndex = 0;
+	}
+	MoveEnemy();
+	if (abs(Util::distance(this->getTransform()->position, m_targetNode->getTransform()->position)) < 10.0f)
+	{
+		SetNextNode();
+	}
+}
+
+void Enemy::MoveEnemy()
+{
+	auto targetVector = Util::normalize(m_targetNode->getTransform()->position - this->getTransform()->position);
+	//std::cout << "x: " << targetVector.x << " y:" << targetVector.y << std::endl;
+
+	float buffer = 0.01;
+	if (targetVector.x >= 1 - buffer && targetVector.x <= 1 + buffer)
+	{
+		this->setAngle(90.0f);
+	}
+	else if (targetVector.x >= -1 - buffer && targetVector.x <= -1 + buffer)
+	{
+		this->setAngle(-90.0f);
+	}
+	else if (targetVector.y >= 1 - buffer && targetVector.y <= 1 + buffer)
+	{
+		this->setAngle(180.0f);
+	}
+	else if (targetVector.y >= -1 - buffer && targetVector.y <= -1 + buffer)
+	{
+		this->setAngle(0.0f);
+	}
+
+	this->getRigidBody()->velocity = targetVector;
+	this->getTransform()->position += this->getRigidBody()->velocity * this->getRigidBody()->maxSpeed;
+}
+
+void Enemy::setCurTargetKdyNode(KeyNode* target)
+{
+	m_curTargetKeyNode = target;
 }

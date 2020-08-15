@@ -6,6 +6,8 @@
 #include <fstream>
 #include"SoundManager.h"
 
+std::vector<PathNode*> PlayScene::m_pathNodeVec;
+
 PlayScene::PlayScene()
 {
 	PlayScene::start();
@@ -610,6 +612,12 @@ void PlayScene::start()
 		//enemy->getTransform()->position =  enemy->getPatrolPath()[0]->getTransform()->position;
 		enemy->getTransform()->position = enemy->getKeyNode()[0]->m_keyNode->getTransform()->position;
 		enemy->getRigidBody()->maxSpeed = 5.0f;
+		enemy->setCurTargetKdyNode(enemy->getKeyNode()[1]);
+		//std::cout << "To: " << enemy->getCurTargetKeyNode()->m_keyNode->getTransform()->position.x << " " << enemy->getCurTargetKeyNode()->m_keyNode->getTransform()->position.y << std::endl;
+		/*for(int i=0;i<(int)enemy->getKeyNode().size();i++)
+		{
+			std::cout << "Node " << i + 1 << ": " << enemy->getKeyNode()[i]->m_keyNode->getTransform()->position.x << " " << enemy->getKeyNode()[i]->m_keyNode->getTransform()->position.y << std::endl;
+		}*/
 	}
 	
 	

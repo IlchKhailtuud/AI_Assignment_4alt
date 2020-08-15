@@ -15,8 +15,8 @@ void PathManager::GetShortestPath(PathNode* start, PathNode* goal)
 	while (s_open.size() > 0)
 	{
 		currentRecord = GetSmallestNode();
-		std::cout << "Doing node at: " << currentRecord->m_node->getTransform()->position.x << ',' << currentRecord->m_node->getTransform()->position.y << std::endl;
-		std::cout << "Found " << currentRecord->m_node->GetConnections().size() << " connections!" << std::endl;
+		//std::cout << "Doing node at: " << currentRecord->m_node->getTransform()->position.x << ',' << currentRecord->m_node->getTransform()->position.y << std::endl;
+		//std::cout << "Found " << currentRecord->m_node->GetConnections().size() << " connections!" << std::endl;
 		if (currentRecord->m_node == goal)
 		{
 			s_open.erase(std::remove(s_open.begin(), s_open.end(), currentRecord), s_open.end());
@@ -79,8 +79,8 @@ void PathManager::GetShortestPath(PathNode* start, PathNode* goal)
 		std::reverse(s_path.begin(), s_path.end());
 	}
 	// Clean up lists. Uncomment the cout below to see how many records we have to clean up.
-	std::cout << "Cleaning up..." << "open size: " << s_open.size() << " | closed size: " << s_closed.size() << std::endl;
-	std::cout << "Path Size: "<<s_path.size() << std::endl;
+	//std::cout << "Cleaning up..." << "open size: " << s_open.size() << " | closed size: " << s_closed.size() << std::endl;
+	//std::cout << "Path Size: "<<s_path.size() << std::endl;
 	for (unsigned i = 0; i < s_open.size(); i++)
 	{
 		delete s_open[i];
