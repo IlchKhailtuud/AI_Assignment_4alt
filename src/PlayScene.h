@@ -64,7 +64,6 @@ private:
 	static std::vector<PathNode*> m_pathNodeVec;
 
 	//DestructibleObstacle* m_pObstacle;
-	std::vector<PathNode*> m_pathNodeVec;
 
 	std::vector<Enemy*> m_enemyVec;
 	//std::vector<DestructibleObstacle*> m_obstacleVec;

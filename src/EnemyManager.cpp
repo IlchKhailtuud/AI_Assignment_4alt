@@ -17,6 +17,8 @@ Enemy* EnemyManager::generateWarrior()
 	warrior->setActive();
 	m_pArcherPool.pop_front();
 	m_pArcherPool.push_back(warrior);
+
+	return warrior;
 }
 
 void EnemyManager::update()

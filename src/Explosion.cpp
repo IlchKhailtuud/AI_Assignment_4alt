@@ -90,3 +90,8 @@ void Explosion::m_buildAnimations()
 
 	setAnimation(explosionAnimation);
 }
+
+int Explosion::getMaxhealth()
+{
+	return m_curHealth;
+}

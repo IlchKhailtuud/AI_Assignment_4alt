@@ -209,23 +209,23 @@ void PlayScene::handleEvents()
 			m_pRightButtonPressed = true;
 			if (m_playerFacingRight)
 			{
-				int face = 1;
+				/*int face = 1;
 				m_pFireballVec.push_back(new FireBall(m_pPlayer->getTransform()->position.x + m_pPlayer->getWidth(), m_pPlayer->getTransform()->position.y + 20, face));
 				for (auto m_pFireball : m_pFireballVec)
 				{
 					addChild(m_pFireball);
 					SoundManager::Instance().playSound("fireball", 0, -1);
-				}
+				}*/
 			}
 			else
 			{
-				int face = -1;
+				/*int face = -1;
 				m_pFireballVec.push_back(new FireBall(m_pPlayer->getTransform()->position.x, m_pPlayer->getTransform()->position.y + 20, face));
 				for (auto m_pFireball : m_pFireballVec)
 				{
 					addChild(m_pFireball);
 					SoundManager::Instance().playSound("fireball", 0, -1);
-				}
+				}*/
 			}
 		}
 	}
@@ -546,12 +546,12 @@ void PlayScene::start()
 	LoadMap();
 	AddConnection();
 	// Plane Sprite
-	m_enemyVec.push_back(new Plane(400.0f, 100.0f));
-	for (auto m_pEnemy : m_enemyVec)
-	{
-		addChild(m_pEnemy);
-		//std::cout << "Position: " << m_pEnemy->getTransform()->position.x << " " << m_pEnemy->getTransform()->position.y << std::endl;
-	}
+	//m_enemyVec.push_back(new Plane(400.0f, 100.0f));
+	//for (auto m_pEnemy : m_enemyVec)
+	//{
+	//	addChild(m_pEnemy);
+	//	//std::cout << "Position: " << m_pEnemy->getTransform()->position.x << " " << m_pEnemy->getTransform()->position.y << std::endl;
+	//}
 	//std::cout << "Enemy: " << (int)m_enemyVec.size() << " "<< numberOfChildren()<<std::endl;
 	/*m_enemyVec[0]->setStartNode(getPathNode(10, 3));
 	m_enemyVec[0]->setEndNode(getPathNode(10, 7));*/
@@ -601,10 +601,10 @@ void PlayScene::start()
 	m_enemyVec[0]->addPathNode(m_pathNodeVec[40]);
 	m_enemyVec[0]->addPathNode(m_pathNodeVec[20]);*/
 
-	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[0]);
+	/*m_enemyVec[0]->AddKeyNode(m_pathNodeVec[0]);
 	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[19]);
 	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[79]);
-	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[60]);
+	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[60]);*/
 	//m_enemyVec[0]->setPath();
 
 	for(auto enemy:m_enemyVec)

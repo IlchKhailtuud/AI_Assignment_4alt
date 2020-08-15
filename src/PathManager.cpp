@@ -2,6 +2,7 @@
 #include"Util.h"
 #include <iostream>
 #include "Config.h"
+#include <algorithm>
 
 void PathManager::GetShortestPath(PathNode* start, PathNode* goal)
 {
