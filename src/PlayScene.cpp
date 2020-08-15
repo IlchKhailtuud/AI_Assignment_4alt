@@ -603,7 +603,8 @@ void PlayScene::start()
 
 	for(auto enemy:m_enemyVec)
 	{
-		enemy->getTransform()->position =  enemy->getPatrolPath()[0]->getTransform()->position;
+		//enemy->getTransform()->position =  enemy->getPatrolPath()[0]->getTransform()->position;
+		enemy->get
 		enemy->getRigidBody()->maxSpeed = 5.0f;
 	}
 	

@@ -1,7 +1,8 @@
 #pragma once
 #ifndef __PLAY_SCENE__
 #define __PLAY_SCENE__
-#include "../Template/Fireball.h"
+//#include "../Template/Fireball.h"
+#include"Fireball.h"
 
 const int MAXENEMY = 1;
 

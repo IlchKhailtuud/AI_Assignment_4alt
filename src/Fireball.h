@@ -1,5 +1,5 @@
-#pragma once
-#include "../src/Sprite.h"
+﻿#pragma once
+#include "Sprite.h"
 
 class FireBall :public Sprite
 {
