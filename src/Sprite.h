@@ -30,6 +30,18 @@ public:
 	void setAngle(float angle) { m_angle = angle; }
 	virtual int getMaxhealth()=0;
 	int getCurHealth() { return m_curHealth; }
+
+	enum Direction
+	{
+		left = 1,
+		right,
+		up,
+		down
+	};
+
+	void setDirection(Direction dir);
+	int getDirection() { return m_dir; }
+	
 protected:
 	// private utility functions
 	bool m_animationExists(const std::string& id);
@@ -37,11 +49,11 @@ protected:
 	SpriteSheet* m_pSpriteSheet;
 
 	std::unordered_map<std::string, Animation> m_pAnimations;
-	enum direction { left, right, up, down } m_dir;
-
+	
 	float m_angle;
 	int m_curHealth;
-	
+
+	Direction m_dir;
 };
 
 #endif /* defined (__SPRITE__) */

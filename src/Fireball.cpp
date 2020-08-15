@@ -37,17 +37,46 @@ void FireBall::draw()
 	const auto x = getTransform()->position.x;
 	const auto y = getTransform()->position.y;
 
-	TextureManager::Instance()->playAnimation(
-		"fireball", getAnimation("fire"),
-		x, y, getWidth(), getHeight(), 0.5f, 0, 255, true);
+	switch (m_dir)
+	{
+	case right:
+		TextureManager::Instance()->playAnimation(
+			"fireball", getAnimation("fire"),
+			x, y, getWidth(), getHeight(), 0.5f, 0, 255, true);
+	case left:
+		TextureManager::Instance()->playAnimation(
+			"fireball", getAnimation("fire"),
+			x, y, getWidth(), getHeight(), 0.5f, 0, 255, true, SDL_FLIP_HORIZONTAL);
+	case up:
+		TextureManager::Instance()->playAnimation(
+			"fireball", getAnimation("fire"),
+			x, y, getWidth(), getHeight(), 0.5f, 90, 255, true);
+	case down:
+		TextureManager::Instance()->playAnimation(
+			"fireball", getAnimation("fire"),
+			x, y, getWidth(), getHeight(), 0.5f, -90, 255, true);
+	}
+	
+	
 }
 
 void FireBall::update()
 {
-	this->getTransform()->position.x += m_speed * m_face;
+	switch (m_dir)
+	{
+	case right:
+		this->getTransform()->position.x += m_speed * 1;
+	case left:
+		this->getTransform()->position.x += m_speed * (-1);
+	case up:
+		this->getTransform()->position.y += m_speed * (-1);
+	case down:
+		this->getTransform()->position.y += m_speed * 1;
+	}
+	
 	if (this->getTransform()->position.x < 0 || this->getTransform()->position.x > 1024 
 		|| this->getTransform()->position.y < 0 || this->getTransform()->position.y > 768)
-		reset();
+	reset();
 }
 
 void FireBall::clean()
@@ -57,6 +86,8 @@ void FireBall::clean()
 
 void FireBall::reset()
 {
+	this->getAnimation("fire").current_frame = 0;
+	
 	if (m_bIsActive == true)
 	{
 		getTransform()->position.x = -1000;

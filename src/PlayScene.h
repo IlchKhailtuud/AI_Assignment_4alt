@@ -3,6 +3,7 @@
 #define __PLAY_SCENE__
 //#include "../Template/Fireball.h"
 #include"Fireball.h"
+#include "Obstacle.h"
 
 const int MAXENEMY = 1;
 
@@ -11,6 +12,7 @@ const int MAXENEMY = 1;
 #include "Player.h"
 #include "Button.h"
 #include "DestructibleObstacle.h"
+#include "Obstacle.h"
 #include "PathNode.h"
 #include "Tile.h"
 #include <array>
@@ -47,7 +49,7 @@ private:
 
 	//Plane* m_pPlaneSprite;
 	Player* m_pPlayer;
-	bool m_playerFacingRight;
+
 	bool m_isDebugMode;
 	bool m_bPlayerHasLOS;
 
@@ -60,25 +62,16 @@ private:
 
 	int m_pathNodeNum;
 
-	//Obstacle* m_pObstacle;
 	static std::vector<PathNode*> m_pathNodeVec;
 
-	//DestructibleObstacle* m_pObstacle;
-
-	std::vector<Enemy*> m_enemyVec;
-	//std::vector<DestructibleObstacle*> m_obstacleVec;
+	std::vector<Obstacle*> m_obstacleVec;
 	std::vector<glm::vec2> m_pointVec;
 	std::vector<glm::vec4> m_colorVec;
 	std::array<std::array<Tile*, Config::COL_NUM>, Config::ROW_NUM> m_level;
-	std::vector<Tile*> m_obstacleVec;
-	std::vector<FireBall*> m_pFireballVec;
 	
 	Label* m_pScoreLabel;
 	Label* m_pEnemyKilledLabel;
 
 	int m_enemyKilled{};
 };
-
-
-
 #endif /* defined (__PLAY_SCENE__) */

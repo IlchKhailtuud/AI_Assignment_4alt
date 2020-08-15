@@ -1,6 +1,5 @@
 #pragma once
-#ifndef __OBSTACLE__
-#define __OBSTACLE__
+
 #include "HealthBarBorder.h"
 #include "HealthBarFiller.h"
 #include "Sprite.h"
@@ -32,7 +31,3 @@ private:
 	HealthBarBorder* m_pBorder;
 	HealthBarFiller* m_pFiller;
 };
-
-
-
-#endif /* defined (__OBSTACLE__) */

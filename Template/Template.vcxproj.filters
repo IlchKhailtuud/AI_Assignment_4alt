@@ -150,6 +150,7 @@
     <ClCompile Include="..\src\ProjectileManager.cpp">
       <Filter>Game Objects</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Obstacle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\StartScene.h">
@@ -314,5 +315,7 @@
     <ClInclude Include="..\src\ProjectileManager.h">
       <Filter>Game Objects</Filter>
     </ClInclude>
+    <ClInclude Include="ObstacleManager.h" />
+    <ClInclude Include="..\src\Obstacle.h" />
   </ItemGroup>
 </Project>
