@@ -5,8 +5,8 @@
 #include"PathManager.h"
 #include <fstream>
 #include"SoundManager.h"
+#include"NodeManager.h"
 
-std::vector<PathNode*> PlayScene::m_pathNodeVec;
 
 PlayScene::PlayScene()
 {
@@ -24,7 +24,7 @@ void PlayScene::draw()
 	{
 		
 		
-		Util::DrawRect(m_pPlayer->getTransform()->position , m_pPlayer->getWidth(), m_pPlayer->getHeight());
+		Util::DrawRect(m_pPlayer->getTransform()->position - glm::vec2(0.5f * m_pPlayer->getWidth(),0.5f*m_pPlayer->getHeight()), m_pPlayer->getWidth(), m_pPlayer->getHeight());
 
 		for(auto m_pEnemy:m_enemyVec)
 		{
@@ -65,7 +65,7 @@ void PlayScene::update()
 		{
 			if (CollisionManager::AABBCheck(fireball, enemy))
 			{
-				enemy->DecHP(m_pPlayer->getDamage());
+				enemy->DecHP(m_pPlayer->getRangeDamage());
 				delete fireball;
 				fireball = nullptr;
 			}
@@ -155,7 +155,7 @@ void PlayScene::handleEvents()
 	// handle player movement if no Game Controllers found
 	if (SDL_NumJoysticks() < 1)
 	{
-		if (EventManager::Instance().isKeyDown(SDL_SCANCODE_A) && !CollisionManager::PlayerCollision(m_pPlayer,glm::vec2(-5.0f,0.0f),m_obstacleVec) && m_pPlayer->getTransform()->position.x > 0.0f)
+		if (EventManager::Instance().isKeyDown(SDL_SCANCODE_A) && !CollisionManager::PlayerCollision(m_pPlayer,glm::vec2(-5.0f,0.0f),m_obstacleVec) && m_pPlayer->getTransform()->position.x > 0.5f*m_pPlayer->getWidth())
 		{
 			m_pPlayer->setAnimationState(PLAYER_RUN_LEFT);
 			m_playerFacingRight = false;
@@ -165,7 +165,7 @@ void PlayScene::handleEvents()
 			m_pPlayer->getRigidBody()->velocity *= m_pPlayer->getRigidBody()->velocity * 0.9f;
 			SoundManager::Instance().playSound("step", 0, -1);
 		}
-		else if (EventManager::Instance().isKeyDown(SDL_SCANCODE_D) && !CollisionManager::PlayerCollision(m_pPlayer, glm::vec2(5.0f, 0.0f), m_obstacleVec) && m_pPlayer->getTransform()->position.x < Config::SCREEN_WIDTH - m_pPlayer->getWidth())
+		else if (EventManager::Instance().isKeyDown(SDL_SCANCODE_D) && !CollisionManager::PlayerCollision(m_pPlayer, glm::vec2(5.0f, 0.0f), m_obstacleVec) && m_pPlayer->getTransform()->position.x < Config::SCREEN_WIDTH - 0.5f*m_pPlayer->getWidth())
 		{
 			m_pPlayer->setAnimationState(PLAYER_RUN_RIGHT);
 			m_playerFacingRight = true;
@@ -175,14 +175,14 @@ void PlayScene::handleEvents()
 			m_pPlayer->getRigidBody()->velocity *= m_pPlayer->getRigidBody()->velocity * 0.9f;
 			SoundManager::Instance().playSound("step", 0, -1);
 		}
-		else if(EventManager::Instance().isKeyDown(SDL_SCANCODE_W) && !CollisionManager::PlayerCollision(m_pPlayer, glm::vec2(0.0f, -5.0f), m_obstacleVec) && m_pPlayer->getTransform()->position.y > 0.0f)
+		else if(EventManager::Instance().isKeyDown(SDL_SCANCODE_W) && !CollisionManager::PlayerCollision(m_pPlayer, glm::vec2(0.0f, -5.0f), m_obstacleVec) && m_pPlayer->getTransform()->position.y > 0.5f*m_pPlayer->getHeight())
 		{
 			m_pPlayer->getRigidBody()->velocity = glm::vec2(0.0f, -5.0f);
 			m_pPlayer->getTransform()->position += m_pPlayer->getRigidBody()->velocity;
 			m_pPlayer->getRigidBody()->velocity *= m_pPlayer->getRigidBody()->velocity * 0.9f;
 			SoundManager::Instance().playSound("step", 0, -1);
 		}
-		else if(EventManager::Instance().isKeyDown(SDL_SCANCODE_S) && !CollisionManager::PlayerCollision(m_pPlayer, glm::vec2(0.0f, 5.0f), m_obstacleVec) && m_pPlayer->getTransform()->position.y < Config::SCREEN_HEIGHT - m_pPlayer->getHeight())
+		else if(EventManager::Instance().isKeyDown(SDL_SCANCODE_S) && !CollisionManager::PlayerCollision(m_pPlayer, glm::vec2(0.0f, 5.0f), m_obstacleVec) && m_pPlayer->getTransform()->position.y < Config::SCREEN_HEIGHT - 0.5f*m_pPlayer->getHeight())
 		{
 			m_pPlayer->getRigidBody()->velocity = glm::vec2(0.0f, 5.0f);
 			m_pPlayer->getTransform()->position += m_pPlayer->getRigidBody()->velocity;
@@ -263,7 +263,7 @@ void PlayScene::handleEvents()
 			for (auto m_pEnemy : m_enemyVec)
 			{
 				if (CollisionManager::AABBCheck(temp, m_pEnemy))
-					m_pEnemy->DecHP(m_pPlayer->getDamage());
+					m_pEnemy->DecHP(m_pPlayer->getMeleeDamage());
 			}
 		}
 	}
@@ -320,7 +320,7 @@ void PlayScene::handleEvents()
 			m_pKPressed = true;
 			for (auto m_pEnemy : m_enemyVec)
 			{
-				m_pEnemy->DecHP(m_pPlayer->getDamage());
+				m_pEnemy->DecHP(m_pPlayer->getMeleeDamage());
 			}
 			SoundManager::Instance().playSound("WEEOOW", 0, -1);
 		}
@@ -356,20 +356,20 @@ void PlayScene::buildGrid()
 		{
 			PathNode* tempNode = new PathNode();
 			tempNode->getTransform()->position = glm::vec2(tempNode->getWidth() * col+0.5f*Config::TILE_SIZE, tempNode->getHeight() * row+0.5f * Config::TILE_SIZE);
-			m_pathNodeVec.push_back(tempNode);
+			NDMA::AddPathNode(tempNode);
 		}
 	}
 }
 
 void PlayScene::displayGrid()
 {
-	for(int i=0;i<(int)m_pathNodeVec.size();i++)
+	for(int i=0;i<(int)NDMA::getPathNodeVec().size();i++)
 	{
-		auto GridColor = (m_pathNodeVec[i]->getLOS()) ? glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) : glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		auto GridColor = (NDMA::getPathNodeVec()[i]->getLOS()) ? glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) : glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 		//std::cout << "Path: " << m_pathNodeVec.size() << " Num: " << row * Config::COL_NUM + col << std::endl;
 		//std::cout << "Grid: " << m_pathNodeVec[i]->getTransform()->position.x - m_pathNodeVec[i]->getWidth() * 0.5f << " " << m_pathNodeVec[i]->getTransform()->position.y - m_pathNodeVec[i]->getHeight() * 0.5f << std::endl;
-		Util::DrawRect(m_pathNodeVec[i]->getTransform()->position - glm::vec2(m_pathNodeVec[i]->getWidth() * 0.5f, m_pathNodeVec[i]->getHeight() * 0.5f), 40, 40);
-		Util::DrawRect(m_pathNodeVec[i]->getTransform()->position , 5, 5, GridColor);
+		Util::DrawRect(NDMA::getPathNodeVec()[i]->getTransform()->position - glm::vec2(NDMA::getPathNodeVec()[i]->getWidth() * 0.5f, NDMA::getPathNodeVec()[i]->getHeight() * 0.5f), 40, 40);
+		Util::DrawRect(NDMA::getPathNodeVec()[i]->getTransform()->position , 5, 5, GridColor);
 	}
 }
 
@@ -388,13 +388,13 @@ void PlayScene::LoadMap()
 				{
 				case 'g':
 					{
-					m_level[row][col] = new Grass(40.0f * col , 40.0f * row ); 
+					m_level[row][col] = new Grass(40.0f * col +0.5* Config::TILE_SIZE, 40.0f * row +0.5* Config::TILE_SIZE);
 					//std::cout << "Grass: " << m_level[row][col]->getTransform()->position.x << " " << m_level[row][col]->getTransform()->position.y << std::endl;
 					break;
 					}
 				case 'b':
 					{
-					m_level[row][col] = new Brick(40.0f * col , 40.0f * row ); 
+					m_level[row][col] = new Brick(40.0f * col + 0.5 * Config::TILE_SIZE, 40.0f * row + 0.5 * Config::TILE_SIZE);
 					m_obstacleVec.push_back(m_level[row][col]);
 					//std::cout << "Obstacle Size: " << m_obstacleVec.size() << std::endl;
 					//std::cout << "Brick: " << m_level[row][col]->getTransform()->position.x << " " << m_level[row][col]->getTransform()->position.y << std::endl;
@@ -408,9 +408,9 @@ void PlayScene::LoadMap()
 				if (!m_level[row][col]->IsObstacle() && !m_level[row][col]->IsHazard())
 				{
 					m_level[row][col]->m_node = new PathNode();
-					m_level[row][col]->m_node->getTransform()->position.x = m_level[row][col]->getTransform()->position.x + 0.5f * Config::TILE_SIZE;
-					m_level[row][col]->m_node->getTransform()->position.y = m_level[row][col]->getTransform()->position.y + 0.5f * Config::TILE_SIZE;
-					m_pathNodeVec.push_back(m_level[row][col]->m_node);
+					m_level[row][col]->m_node->getTransform()->position.x = m_level[row][col]->getTransform()->position.x ;
+					m_level[row][col]->m_node->getTransform()->position.y = m_level[row][col]->getTransform()->position.y ;
+					NDMA::AddPathNode(m_level[row][col]->m_node);
 					m_pathNodeNum++;
 					//std::cout << "PathNode[" << row << "][" << col << "] created." << std::endl;
 				}
@@ -447,7 +447,7 @@ void PlayScene::AddConnection()
 
 void PlayScene::setGridLOS()
 {
-	for(auto m_pNode:m_pathNodeVec)
+	for(auto m_pNode:NDMA::getPathNodeVec())
 	{
 		for(auto obstacle:m_obstacleVec)
 		{
@@ -498,12 +498,12 @@ void PlayScene::DrawPath()
 PathNode* PlayScene::getPathNode(int x, int y)
 {
 	int Index = (x - 1) * Config::ROW_NUM + (y - 1) * Config::COL_NUM;
-	return m_pathNodeVec[Index];
+	return NDMA::getPathNodeVec()[Index];
 }
 
 void PlayScene::drawLOS()
 {	
-	for (auto node : m_pathNodeVec)
+	for (auto node : NDMA::getPathNodeVec())
 	{
 		if(!node->getLOS())
 		{
@@ -545,66 +545,26 @@ void PlayScene::start()
 	//buildGrid();
 	LoadMap();
 	AddConnection();
+
+	// Player Sprite
+	m_pPlayer = new Player(100.0f, 500.0f);
+	addChild(m_pPlayer);
+	m_playerFacingRight = true;
+	
 	// Plane Sprite
-	m_enemyVec.push_back(new Plane(400.0f, 100.0f));
+	m_enemyVec.push_back(new Plane(400.0f, 100.0f,m_pPlayer));
 	for (auto m_pEnemy : m_enemyVec)
 	{
 		addChild(m_pEnemy);
 		//std::cout << "Position: " << m_pEnemy->getTransform()->position.x << " " << m_pEnemy->getTransform()->position.y << std::endl;
 	}
 	//std::cout << "Enemy: " << (int)m_enemyVec.size() << " "<< numberOfChildren()<<std::endl;
-	/*m_enemyVec[0]->setStartNode(getPathNode(10, 3));
-	m_enemyVec[0]->setEndNode(getPathNode(10, 7));*/
 
-	/*m_enemyVec[0]->addPathNode(m_pathNodeVec[0]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[1]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[2]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[3]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[4]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[5]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[6]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[7]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[8]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[9]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[10]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[11]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[12]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[13]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[14]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[15]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[16]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[17]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[18]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[19]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[39]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[59]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[79]);	
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[78]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[77]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[76]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[75]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[74]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[73]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[72]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[71]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[70]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[69]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[68]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[67]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[66]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[65]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[64]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[63]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[62]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[61]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[60]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[40]);
-	m_enemyVec[0]->addPathNode(m_pathNodeVec[20]);*/
 
-	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[0]);
-	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[19]);
-	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[79]);
-	m_enemyVec[0]->AddKeyNode(m_pathNodeVec[60]);
+	m_enemyVec[0]->AddKeyNode(NDMA::getPathNodeVec()[0]);
+	m_enemyVec[0]->AddKeyNode(NDMA::getPathNodeVec()[19]);
+	m_enemyVec[0]->AddKeyNode(NDMA::getPathNodeVec()[79]);
+	m_enemyVec[0]->AddKeyNode(NDMA::getPathNodeVec()[60]);
 	//m_enemyVec[0]->setPath();
 
 	for(auto enemy:m_enemyVec)
@@ -619,13 +579,9 @@ void PlayScene::start()
 			std::cout << "Node " << i + 1 << ": " << enemy->getKeyNode()[i]->m_keyNode->getTransform()->position.x << " " << enemy->getKeyNode()[i]->m_keyNode->getTransform()->position.y << std::endl;
 		}*/
 	}
-	
-	
 
-	// Player Sprite
-	m_pPlayer = new Player(100.0f,500.0f);
-	addChild(m_pPlayer);
-	m_playerFacingRight = true;
+	//NDMA::setFleeNode();
+	NDMA::AddFleeNode(NDMA::getPathNodeVec()[280]);
 
 	//Load Sound
 	SoundManager::Instance().load("../Assets/audio/Battle_BGM.wav", "BGM", SOUND_MUSIC);

@@ -161,6 +161,7 @@
     <ClCompile Include="..\src\Fireball.cpp" />
     <ClCompile Include="..\src\HealthBarBorder.cpp" />
     <ClCompile Include="..\src\HealthBarFiller.cpp" />
+    <ClCompile Include="..\src\NodeManager.cpp" />
     <ClCompile Include="..\src\Obstacle.cpp" />
     <ClCompile Include="..\src\PathManager.cpp" />
     <ClCompile Include="..\src\PathNode.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="..\src\Fireball.h" />
     <ClInclude Include="..\src\HealthBarBorder.h" />
     <ClInclude Include="..\src\HealthBarFiller.h" />
+    <ClInclude Include="..\src\NodeManager.h" />
     <ClInclude Include="..\src\Obstacle.h" />
     <ClInclude Include="..\src\PathManager.h" />
     <ClInclude Include="..\src\PathNode.h" />
