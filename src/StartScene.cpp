@@ -32,9 +32,6 @@ void StartScene::clean()
 	delete m_pInstructionsLabel;
 	m_pInstructionsLabel = nullptr;
 
-	delete m_pShip;
-	m_pShip = nullptr;
-
 	delete m_pStartButton;
 	m_pStartButton = nullptr;
 
@@ -71,11 +68,6 @@ void StartScene::start()
 	m_pNameLabel = new Label("Zihan Xu 101288706 Yiliqi 101289355", "Consolas", 20, blue, glm::vec2(400.0f, 200.0f));
 	m_pNameLabel->setParent(this);
 	addChild(m_pNameLabel);
-
-	m_pShip = new Ship(400.0f,300.0f);
-	m_pShip->getTransform()->position = glm::vec2(400.0f, 300.0f);
-	addChild(m_pShip);
-	std::cout << "W: " << m_pShip->getWidth() << " " << m_pShip->getHeight() << std::endl;
 
 	// Start Button
 	m_pStartButton = new Button();

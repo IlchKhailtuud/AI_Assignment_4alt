@@ -332,6 +332,7 @@ void Enemy::setCurNode()
 void Enemy::setCurTargetKdyNode(KeyNode* target)
 {
 	m_curTargetKeyNode = target;
+}
 
 void Enemy::setActive()
 {

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "DestructibleObstacle.h"
 #include "DisplayObject.h"
 #include "PathNode.h"
 #include "Label.h"

@@ -20,6 +20,9 @@ public:
 	
 private:
 	void m_buildAnimations();
+	int getMaxhealth() override;
+private:
 	//int m_currentFrame;
 	bool m_bIsActive;
+
 };
