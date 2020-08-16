@@ -207,7 +207,7 @@ bool CollisionManager::lineAABBCheck(Ship* object1, GameObject* object2)
 	{
 		switch (object2->getType()) {
 		case TARGET:
-			std::cout << "Collision with Obstacle!" << std::endl;
+			std::cout << "Collision with DestructibleObstacle!" << std::endl;
 			SoundManager::Instance().playSound("yay", 0);
 
 			break;
@@ -235,7 +235,7 @@ bool CollisionManager::LOSCheck(GameObject* from, GameObject* to, GameObject* ob
 
 	if (lineRectCheck(lineStart, lineEnd, boxStart, boxWidth, boxHeight))
 	{
-		//std::cout << "No LOS - Collision with Obstacle!" << std::endl;
+		//std::cout << "No LOS - Collision with DestructibleObstacle!" << std::endl;
 		
 		return false;
 	}
@@ -259,16 +259,16 @@ bool CollisionManager::LOSCheck(GameObject* from, GameObject* to, Tile* obstacle
 	const auto boxStart = obstacle->getTransform()->position;
 	
 	/*std::cout << "Start: " << lineStart.x << " " << lineStart.y << " End: " << lineEnd.x << " " << lineEnd.y << std::endl;
-	std::cout << "Obstacle: " << obstacle->getTransform()->position.x << " " << obstacle->getTransform()->position.y << std::endl;
+	std::cout << "DestructibleObstacle: " << obstacle->getTransform()->position.x << " " << obstacle->getTransform()->position.y << std::endl;
 	std::cout << "Result: " << lineRectCheck(lineStart, lineEnd, boxStart, boxWidth, boxHeight) << std::endl;*/
 	
 	if (!lineRectCheck(lineStart, lineEnd, boxStart, boxWidth, boxHeight))
 	{
-		//std::cout << "No LOS - Collision with Obstacle!" << std::endl;
+		//std::cout << "No LOS - Collision with DestructibleObstacle!" << std::endl;
 
 		return false;
 	}
-	//std::cout << "LOS - Collision with Obstacle " << obstacle->getTransform()->position.x << " " << obstacle->getTransform()->position.y << std::endl;
+	//std::cout << "LOS - Collision with DestructibleObstacle " << obstacle->getTransform()->position.x << " " << obstacle->getTransform()->position.y << std::endl;
 	return true;
 }
 

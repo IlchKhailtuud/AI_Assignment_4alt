@@ -81,7 +81,7 @@ BarrelTile::BarrelTile(float x, float y):Tile(x,y)
 {
 
 	m_pGrass=new Grass(x,y);
-	m_pObstacle = new Obstacle(x, y,64,64);	
+	m_pObstacle = new DestructibleObstacle(x, y,64,64);	
 
 	m_obstacle = true;
 	m_hazard = false;

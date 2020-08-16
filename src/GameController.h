@@ -28,7 +28,7 @@ struct GameController
 	bool LEFT_SHOULDER;
 	bool RIGHT_SHOULDER;
 
-	// face buttons
+	// m_face buttons
 	bool A_BUTTON;
 	bool B_BUTTON;
 	bool X_BUTTON;

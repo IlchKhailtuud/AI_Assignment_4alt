@@ -2,7 +2,7 @@
 #include "DisplayObject.h"
 #include "PathNode.h"
 #include "Label.h"
-#include"Obstacle.h"
+#include"DestructibleObstacle.h"
 
 class Tile : public DisplayObject
 {
@@ -83,5 +83,5 @@ public:
 private:
 	//const int brickHP = 50;
 	Tile* m_pGrass;
-	Obstacle* m_pObstacle;
+	DestructibleObstacle* m_pObstacle;
 };
