@@ -2,20 +2,20 @@
 #include "Sprite.h"
 #include"PathNode.h"
 #include "PathManager.h"
+#include "Player.h"
+#include"NodeManager.h"
 
 const int ENEMYMAXHEALTH = 100;
 
 class Enemy:public Sprite
 {
 public:
-	Enemy();
+	Enemy(Player* player=nullptr);
 	~Enemy();
 	
 	virtual void draw() = 0;
 	virtual void update() = 0;
 	virtual void clean() = 0;
-  virtual void reset() = 0;
-	virtual void setActive() = 0;
 
 	//getter
 	int getDetectionRadius();
@@ -29,8 +29,8 @@ public:
 	std::vector<PathConnection*> getPath();
 	
 	//setter
-	void setStartNode(PathNode* start) { start_point = start; }
-	void setEndNode(PathNode* end) { end_point = end; }
+	//void setStartNode(PathNode* start) { start_point = start; }
+	//void setEndNode(PathNode* end) { end_point = end; }
 	void setPath(std::vector<PathNode*> PatrolPath);
 	void setPatrolMode(bool isPatrol) { m_isPatrol = isPatrol; }
 	void setHasLOS(bool hasLOS) { m_hasLOS = hasLOS; }
@@ -42,15 +42,15 @@ public:
 	void detectPlayer(Sprite* player);	
 	void AddKeyNode(PathNode* keyNode);
 	void PatrolMove();
-
 	void SetNextNode();	
 	void Move2LOS();
 	void MoveEnemy();
-  bool isActive() { return m_bIsActive; }
+	void Flee();
+	void setCurNode();
 protected:
 	
 public:
-
+	
 protected:
 	float 	m_accel,
 			m_vel,
@@ -59,16 +59,17 @@ protected:
 	int	m_detectionRadius;
 	bool m_isPatrol,
 		m_hasLOS,
-		m_DetectPlayer,
-		m_bIsActive;
+		m_DetectPlayer;
 	
-	PathNode* start_point, * end_point;
 	PathNode* m_targetNode,
 		* m_currentNode,
-		* m_nextNode;
-	PathNode* m_pTargetPathNode;
+		* m_nextNode,
+		* m_pTargetPathNode,
+		* m_pFleeNode;
 	KeyNode* m_curTargetKeyNode;
 	std::vector<PathConnection*> m_path;
 	std::vector<PathNode*> m_pPatrolPath;
 	std::vector<KeyNode*> m_pKeyNodeVec;
+
+	Player* m_pTargetPlayer;
 };
