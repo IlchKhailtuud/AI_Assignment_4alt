@@ -29,7 +29,7 @@ public:
 	virtual void clean() override;
 	virtual void handleEvents() override;
 	virtual void start() override;
-	static std::vector<PathNode*> getNodeVec() { return m_pathNodeVec; }
+	//static std::vector<PathNode*> getNodeVec() { return m_pathNodeVec; }
 private:
 	void buildGrid();
 	void displayGrid();
@@ -62,9 +62,12 @@ private:
 
 	int m_pathNodeNum;
 
-	static std::vector<PathNode*> m_pathNodeVec;
-
 	std::vector<Obstacle*> m_obstacleVec;
+	//Obstacle* m_pObstacle;
+	//static std::vector<PathNode*> m_pathNodeVec;
+	std::vector<Enemy*> m_enemyVec;
+	//std::vector<Obstacle*> m_obstacleVec;
+
 	std::vector<glm::vec2> m_pointVec;
 	std::vector<glm::vec4> m_colorVec;
 	std::array<std::array<Tile*, Config::COL_NUM>, Config::ROW_NUM> m_level;

@@ -11,7 +11,7 @@
 class Plane final : public Enemy
 {
 public:
-	Plane(float x,float y);
+	Plane(float x,float y,Player* player);
 	~Plane();
 
 	// Life Cycle Functions
@@ -19,7 +19,7 @@ public:
 	virtual void update() override;
 	virtual void clean() override;
 
-	void getDir();	
+	//void getDir();	
 private:
 	void m_buildAnimations();
 	void MovePlane();
@@ -28,16 +28,22 @@ private:
 	
 	void m_checkCurrentConditions();
 	void m_stateMachineUpdate();
-	
+	void setAttackNode();
+	void Move2NearestAttackNode();
+	void Melee();
 public:
 
 private:
-	bool m_withinMeleeRange;
-
+	bool m_withinMeleeRange,
+		m_attackMode;
+	int m_meleeCounter;
+	
 	HealthBarBorder* m_pBorder;
 	HealthBarFiller* m_pFiller;
 
 	BehaviorState m_outerState, m_innerState;
+	std::vector<PathNode*> m_NodeCanAttack;
+	
 };
 
 

@@ -1,12 +1,16 @@
 #include "Plane.h"
-
 #include <algorithm>
-
+#include "CollisionManager.h"
+#include "PlayScene.h"
 #include "TextureManager.h"
 #include"Util.h"
 #include "SoundManager.h"
 
-Plane::Plane(float x,float y)
+const int MELEERANGE = 20;
+const int MELEEDAMAGE = 20;
+const int MELEECD = 100;
+
+Plane::Plane(float x,float y,Player* player):Enemy(player)
 {
 	/*TextureManager::Instance()->loadSpriteSheet(
 		"../Assets/sprites/atlas.txt",
@@ -22,10 +26,10 @@ Plane::Plane(float x,float y)
 	setSpriteSheet(TextureManager::Instance()->getSpriteSheet("slime"));
 
 	// set frame width
-	setWidth(32);
+	setWidth(40);
 	
 	// set frame height
-	setHeight(32);
+	setHeight(40);
 
 	getTransform()->position = glm::vec2(x,y);
 	getRigidBody()->velocity = glm::vec2(0.0f, 0.0f);
@@ -42,6 +46,9 @@ Plane::Plane(float x,float y)
 
 	m_outerState = FIGHT;
 	m_innerState = PATROL;
+
+	m_withinMeleeRange = false;
+	m_attackMode = false;
 
 	m_buildAnimations();
 }
@@ -80,32 +87,28 @@ void Plane::draw()
 
 void Plane::update()
 {
-	//if (m_path.empty())
-	//{
-	//	std::cout << "Path Empty" << std::endl;
-	//}
-	////std::cout << "Running" << std::endl;
-	////std::cout << MAMA::Distance((int)(GetDstP()->x + GetDstP()->w / 2.0f), m_targetNode->x+16, (int)(GetDstP()->y + GetDstP()->h / 2.0f), m_targetNode->y+16) << std::endl;
-	//if (Util::distance({ (getTransform()->position.x + getWidth() / 2.0f), m_targetNode->getTransform()->position.x + 20 }, { (getTransform()->position.y + getHeight() / 2.0f), (m_targetNode->getTransform()->position.y + 20) }) <= 10.0)
-	//	SetNextNode();
-	////std::cout << "Current: " << m_currentNode->x /32<< " " << m_currentNode->y/32 << std::endl;
-	////std::cout << "Target: " << m_targetNode->x/32 << " " << m_targetNode->y /32<< std::endl;
-	//getDir();
-	////std::cout << m_dir << std::endl;
-	//MovePlane();
-	//
-
+	std::cout << "distance: " << Util::distance(this->getTransform()->position, m_pTargetPlayer->getTransform()->position) << std::endl;
+	if (Util::distance(this->getTransform()->position, m_pTargetPlayer->getTransform()->position) < 60.0f)
+		m_withinMeleeRange = true;
+	else
+		m_withinMeleeRange = false;
+	
 	m_checkCurrentConditions();
+	//std::cout << m_outerState << " " << m_innerState << std::endl;
+	m_stateMachineUpdate();
 	
-
+	m_meleeCounter++;
 	
-	if(m_isPatrol)
-	{
-		//MovePlanetoPatrolNode();
-		//PatrolMove();
-		Move2LOS();
-		SoundManager::Instance().playSound("engine", 0, -1);
-	}
+	//if(m_isPatrol)
+	//{
+	//	//MovePlanetoPatrolNode();
+	//	//PatrolMove();
+	//	//Move2LOS();
+	//	//setAttackNode();
+	//	//Move2NearestAttackNode();
+	//	//Flee();
+	//	SoundManager::Instance().playSound("engine", 0, -1);
+	//}
 
 	m_pFiller->update();
 	m_pBorder->update();
@@ -215,30 +218,58 @@ void Plane::m_checkCurrentConditions()
 {
 	if (m_curHealth >= 25)
 	{
-		if (m_DetectPlayer)
+		if(m_attackMode)
 		{
-			if (m_hasLOS)
+			if (!m_hasLOS)
 			{
 				// check the distance
-
+				std::cout <<"In Melee Range: "<< m_withinMeleeRange << std::endl;
 				if (m_withinMeleeRange)
 				{
-					m_innerState=MELEE_ATTACK;
+					m_innerState = MELEE_ATTACK;
+					//std::cout << "change 2 melee" << std::endl;
 				}
 				else
 				{
 					m_innerState = MOVE_TO_MELEE;
+					//std::cout << "change 2 move 2 melee" << std::endl;
 				}
 			}
 			else
 			{
 				m_innerState = MOVE_TO_LOS;
+				//std::cout << "change 2 move 2 los" << std::endl;
+			}
+		}
+		else if (m_DetectPlayer)
+		{
+			if (!m_hasLOS)
+			{
+				// check the distance
+				std::cout << m_withinMeleeRange << std::endl;
+				m_attackMode = true;
+				if (m_withinMeleeRange)
+				{
+					m_innerState=MELEE_ATTACK;
+					//std::cout << "change 2 melee" << std::endl;
+				}
+				else
+				{
+					m_innerState = MOVE_TO_MELEE;
+					//std::cout << "change 2 move 2 melee" << std::endl;
+				}
+			}
+			else
+			{
+				m_innerState = MOVE_TO_LOS;
+				//std::cout << "change 2 move 2 los" << std::endl;
 			}
 		}
 	}
 	else
 	{
 		m_outerState=FLIGHT;
+		//std::cout << "change 2 flee" << std::endl;
 	}
 }
 
@@ -252,23 +283,30 @@ void Plane::m_stateMachineUpdate()
 		case PATROL:
 			{
 				// Patrol Action
-					
+				PatrolMove();
+				//std::cout << "Patroling..." << std::endl;
 				break;
-			}	
-			
+			}
 		case MELEE_ATTACK:
 			{
 				// Perform Melee Attack Action
+				Melee();
+				std::cout << "Meleeing..." << std::endl;
 				break;
 			}					
 		case MOVE_TO_LOS:
 			{
 				// Move 2 LOS Action
+				Move2LOS();
+				//std::cout << "Moving to LOS..." << std::endl;
 				break;
 			}			
 		case MOVE_TO_MELEE:
 			{
 				// Move 2 Melee Range Action
+				setAttackNode();
+				Move2NearestAttackNode();
+				//std::cout << "Moving to Attack..." << std::endl;
 				break;
 			}			
 		}
@@ -276,10 +314,186 @@ void Plane::m_stateMachineUpdate()
 	case FLIGHT:
 		{
 			// Flee Action
+			Flee();
+			std::cout << "Fleeing..." << std::endl;
 			break;
 		}
 	}
 }
+
+void Plane::setAttackNode()
+{
+	if (m_pTargetPlayer == nullptr)
+		return;
+	PathNode* PlayerCurNode=nullptr;
+	float playerDistance=0.0f;
+	m_NodeCanAttack.clear();
+	m_NodeCanAttack.shrink_to_fit();
+	for(auto pathnode: NDMA::getPathNodeVec())
+	{
+		float tempDistance = Util::distance(m_pTargetPlayer->getTransform()->position, pathnode->getTransform()->position);
+		if (playerDistance == 0.0f)
+		{
+			playerDistance = tempDistance;
+			PlayerCurNode = pathnode;
+		}
+		else if (tempDistance < playerDistance)
+		{
+			playerDistance = tempDistance;
+			PlayerCurNode = pathnode;
+		}
+	}
+	if (PlayerCurNode->GetConnections().empty())
+		return;
+	for(auto pathconnection:PlayerCurNode->GetConnections())
+	{
+		m_NodeCanAttack.push_back(pathconnection->GetToNode());
+	}
+	//std::cout << "Node number: " << (int)m_NodeCanAttack.size() << std::endl;
+}
+
+void Plane::Move2NearestAttackNode()
+{
+	if (m_NodeCanAttack.empty())
+		return;
+	PathNode* AttackNode=nullptr;
+	float tempNearestDis = 0.0f;
+	for(auto pathnode:m_NodeCanAttack)
+	{
+		if(tempNearestDis==0.0f)
+		{
+			tempNearestDis = Util::distance(this->getTransform()->position, pathnode->getTransform()->position);
+			AttackNode = pathnode;
+		}
+		else if(Util::distance(this->getTransform()->position, pathnode->getTransform()->position)<tempNearestDis)
+		{
+			tempNearestDis = Util::distance(this->getTransform()->position, pathnode->getTransform()->position);
+			AttackNode = pathnode;
+		}
+	}
+	if (Util::distance(this->getTransform()->position, AttackNode->getTransform()->position) < 10.0f)
+	{
+		return;
+	}
+	float DistancefromThis = 0.0f;
+	if(m_currentNode==nullptr)
+	{
+		setCurNode();
+	}
+	if (m_pTargetPathNode != AttackNode)
+	{
+		m_pTargetPathNode = AttackNode;
+		if (m_currentNode == m_pTargetPathNode)
+			return;
+		PathManager::GetShortestPath(m_currentNode, m_pTargetPathNode);
+		m_path = PathManager::getPath();
+		m_currentNode = m_path.front()->GetFromNode();
+		m_targetNode = m_path.front()->GetToNode();
+		m_nodeIndex = 0;
+	}
+	//std::cout << m_targetNode->getTransform()->position.x << " " << m_targetNode->getTransform()->position.y << std::endl;
+	MoveEnemy();
+	if (abs(Util::distance(this->getTransform()->position, m_targetNode->getTransform()->position)) < 10.0f)
+	{
+		SetNextNode();
+	}
+	//std::cout << "finished move 2 attack" << std::endl;
+}
+
+void Plane::Melee()
+{
+	if (m_meleeCounter < MELEECD)
+		return;
+	m_meleeCounter = 0;
+	std::cout << "enter melee" << std::endl;
+	std::cout << "Enemy: " << this->m_currentNode->getTransform()->position.x << " " << this->m_currentNode->getTransform()->position.y
+		<< "Player: " << m_pTargetPlayer->getCurNode()->getTransform()->position.x << " " << m_pTargetPlayer->getCurNode()->getTransform()->position.y << std::endl;
+	if(this->m_currentNode->getTransform()->position.x==m_pTargetPlayer->getCurNode()->getTransform()->position.x &&
+		this->m_currentNode->getTransform()->position.y < m_pTargetPlayer->getCurNode()->getTransform()->position.y)
+	{
+		m_dir = down;
+	}
+	else if (this->m_currentNode->getTransform()->position.x == m_pTargetPlayer->getCurNode()->getTransform()->position.x &&
+		this->m_currentNode->getTransform()->position.y > m_pTargetPlayer->getCurNode()->getTransform()->position.y)
+	{
+		m_dir = up;
+	}
+	else if (this->m_currentNode->getTransform()->position.x > m_pTargetPlayer->getCurNode()->getTransform()->position.x &&
+		this->m_currentNode->getTransform()->position.y == m_pTargetPlayer->getCurNode()->getTransform()->position.y)
+	{
+		m_dir = left;
+	}
+	else if (this->m_currentNode->getTransform()->position.x < m_pTargetPlayer->getCurNode()->getTransform()->position.x &&
+		this->m_currentNode->getTransform()->position.y == m_pTargetPlayer->getCurNode()->getTransform()->position.y)
+	{
+		m_dir = right;
+	}
+	
+	SDL_Rect temp;
+	switch(m_dir)
+	{
+	case up:
+		{
+			temp.x = this->getTransform()->position.x - 0.5f * this->getWidth();
+			temp.y = this->getTransform()->position.y - 0.5f * this->getHeight() - MELEERANGE;
+			temp.w = this->getWidth();
+			temp.h = MELEERANGE;
+
+			if (CollisionManager::AABBCheck(temp, m_pTargetPlayer))
+			{
+				m_pTargetPlayer->DecHP(MELEEDAMAGE);
+				SoundManager::Instance().playSound("melee", 0, -1);
+			}
+				
+			break;
+		}
+	case down:
+		{
+			temp.x = this->getTransform()->position.x - 0.5f * this->getWidth();
+			temp.y = this->getTransform()->position.y + 0.5f * this->getHeight();
+			temp.w = this->getWidth();
+			temp.h = MELEERANGE;
+
+			if (CollisionManager::AABBCheck(temp, m_pTargetPlayer))
+			{
+				m_pTargetPlayer->DecHP(MELEEDAMAGE);
+				SoundManager::Instance().playSound("melee", 0, -1);
+			}
+			break;
+		}
+	case left:
+		{
+			temp.x = this->getTransform()->position.x - 0.5f * this->getWidth() - MELEERANGE;
+			temp.y = this->getTransform()->position.y - 0.5f * this->getHeight();
+			temp.w = MELEERANGE;
+			temp.h = this->getHeight();
+
+			if (CollisionManager::AABBCheck(temp, m_pTargetPlayer))
+			{
+				m_pTargetPlayer->DecHP(MELEEDAMAGE);
+				SoundManager::Instance().playSound("melee", 0, -1);
+			}
+			break;
+		}
+	case right:
+		{
+			temp.x = this->getTransform()->position.x + 0.5f * this->getWidth();
+			temp.y = this->getTransform()->position.y - 0.5f * this->getHeight();
+			temp.w = MELEERANGE;
+			temp.h = this->getHeight();
+
+			if (CollisionManager::AABBCheck(temp, m_pTargetPlayer))
+			{
+				m_pTargetPlayer->DecHP(MELEEDAMAGE);
+				SoundManager::Instance().playSound("melee", 0, -1);
+			}
+			break;
+		}
+	default: break;
+	}
+}
+
+
 
 
 /*void Plane::setPath(std::vector<PathConnection*> path)
@@ -291,22 +505,22 @@ void Plane::m_stateMachineUpdate()
 
 
 
-void Plane::getDir()
-{
-	if (m_targetNode->getTransform()->position.x == m_currentNode->getTransform()->position.x && m_targetNode->getTransform()->position.y > m_currentNode-> getTransform()->position.y)
-		m_dir = down;
-	if (m_targetNode->getTransform()->position.x == m_currentNode->getTransform()->position.x && m_targetNode->getTransform()->position.y < m_currentNode->getTransform()->position.y)
-		m_dir = up;
-	if (m_targetNode->getTransform()->position.x < m_currentNode->getTransform()->position.x && m_targetNode->getTransform()->position.y == m_currentNode->getTransform()->position.y)
-		m_dir = left;
-	if (m_targetNode->getTransform()->position.x > m_currentNode->getTransform()->position.x && m_targetNode-> getTransform()->position.y == m_currentNode->getTransform()->position.y)
-		m_dir = right;
-	if (m_currentNode == m_targetNode)
-	{
-		PathNode* temp = start_point;
-		start_point = end_point;
-		end_point = temp;
-		temp = nullptr;
-		m_nodeIndex = 0;
-	}
-}
+//void Plane::getDir()
+//{
+//	if (m_targetNode->getTransform()->position.x == m_currentNode->getTransform()->position.x && m_targetNode->getTransform()->position.y > m_currentNode-> getTransform()->position.y)
+//		m_dir = down;
+//	if (m_targetNode->getTransform()->position.x == m_currentNode->getTransform()->position.x && m_targetNode->getTransform()->position.y < m_currentNode->getTransform()->position.y)
+//		m_dir = up;
+//	if (m_targetNode->getTransform()->position.x < m_currentNode->getTransform()->position.x && m_targetNode->getTransform()->position.y == m_currentNode->getTransform()->position.y)
+//		m_dir = left;
+//	if (m_targetNode->getTransform()->position.x > m_currentNode->getTransform()->position.x && m_targetNode-> getTransform()->position.y == m_currentNode->getTransform()->position.y)
+//		m_dir = right;
+//	if (m_currentNode == m_targetNode)
+//	{
+//		PathNode* temp = start_point;
+//		start_point = end_point;
+//		end_point = temp;
+//		temp = nullptr;
+//		m_nodeIndex = 0;
+//	}
+//}

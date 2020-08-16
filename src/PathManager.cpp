@@ -22,7 +22,7 @@ void PathManager::GetShortestPath(PathNode* start, PathNode* goal)
 		{
 			s_open.erase(std::remove(s_open.begin(), s_open.end(), currentRecord), s_open.end());
 			s_closed.push_back(currentRecord);
-			m_pathCost = currentRecord->m_totalCost / 32;
+			m_pathCost = currentRecord->m_totalCost / 40;
 			break; // We found the goal!
 		}
 		std::vector<PathConnection*> connections = currentRecord->m_node->GetConnections();
